@@ -20,4 +20,14 @@ class AstroServiceTest {
         System.out.println(peopleInSpace);
     }
 
+    @Test
+    void getAstroResponseSync() {
+        AstroService.AstroResponse response = astroService.getAstroResponseSync();
+        assertNotNull(response);
+        assertEquals("success", response.message());
+        assertTrue(response.number() >= 0);
+        assertEquals(response.number(), response.people().size());
+        System.out.println(response);
+    }
+
 }
