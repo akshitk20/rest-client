@@ -1,8 +1,11 @@
 package com.springboot.restclient.service;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -21,6 +24,8 @@ public class AstroService {
     }
     private final RestTemplate restTemplate;
 
+    private final WebClient client = WebClient.create("http://api.open-notify.org");
+
     public AstroService(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
@@ -31,5 +36,14 @@ public class AstroService {
 
     public AstroResponse getAstroResponseSync() {
         return restTemplate.getForObject("http://api.open-notify.org/astros.json", AstroResponse.class);
+    }
+
+    public Mono<AstroResponse> getAstroResponseAsync() {
+        return client.get()
+                .uri("/astros.json")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve() // sets up the request
+                .bodyToMono(AstroResponse.class) // decode the body to target type
+                .log();
     }
 }
